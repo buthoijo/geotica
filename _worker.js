@@ -543,6 +543,8 @@ const UI_HTML = `<!DOCTYPE html>
             }
         }
 
+        /* ---------- MAIN WORKER ---------- */
+
         // ====== Fungsi bantu: susun nama config dengan kode negara + provider ======
         function buildConfigName(prefix, proxy) {
             const code = (proxy.countryCode || '').toUpperCase();
