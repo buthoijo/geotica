@@ -8,7 +8,7 @@ import { connect } from "cloudflare:sockets";
 // ==================== KONSTANTA ====================
 const vmessUUID = "3b01a777-55e7-49f6-8637-d94ee69607c6";
 const PROXY_LIST_URL = "https://raw.githubusercontent.com/FoolVPN-ID/Nautica/refs/heads/main/proxyList.txt";
-const CHECK_API_URL = "cprx-sshvless.wasmer.app/api/check";
+const CHECK_API_URL = "https://check.jak.biz.id/check";
 
 // ==================== UI HTML ====================
 const UI_HTML = `<!DOCTYPE html>
@@ -224,7 +224,7 @@ const UI_HTML = `<!DOCTYPE html>
         const uuid = atob('M2IwMWE3NzctNTVlNy00OWY2LTg2MzctZDk0ZWU2OTYwN2M2');
         const host = window.location.hostname;
         const proxyListUrl = 'https://raw.githubusercontent.com/jaka1m/botak/refs/heads/main/cek/proxyList.txt';
-        const CHECK_API_URL = 'https://cprx-sshvless.wasmer.app/api/check';
+        const CHECK_API_URL = '${CHECK_API_URL}';
         const VMS_PRE = atob('dm1lc3M6Ly8=');
         const VLS_PRE = atob('dmxlc3M6Ly8=');
         const TRJ_PRE = atob('dHJvamFuOi8v');
@@ -264,19 +264,14 @@ const UI_HTML = `<!DOCTYPE html>
                 const response = await fetch(apiUrl);
                 const data = await response.json();
                 
-                // Format baru: proxyip true = ACTIVE, false = INACTIVE
-                const isActive = data.proxyip === true;
-                
                 const result = {
-                    status: isActive ? 'ACTIVE' : 'INACTIVE',
+                    status: data.status || 'UNKNOWN',
                     delay: data.delay || 'N/A',
-                    speed: data.delay || 'N/A',
-                    isp: data.asOrganization || '',
+                    speed: data.speed_est || 'N/A',
+                    isp: data.isp || '',
                     country: data.country || '',
                     asn: data.asn || '',
-                    colo: data.colo ? data.colo.iata : '',
-                    proxyip: data.ip || '',
-                    hostname: data.hostname || ''
+                    colo: data.colo || ''
                 };
                 
                 statusCache.set(cacheKey, result);
@@ -406,10 +401,7 @@ const UI_HTML = `<!DOCTYPE html>
             }
             
             const isActive = proxy.status === 'ACTIVE';
-            const checkInfo = proxy.checkInfo || {};
-            const tooltipText = 'Delay: ' + proxy.delay + ' | Speed: ' + proxy.speed + 
-                              (checkInfo.proxyip ? ' | IP: ' + checkInfo.proxyip : '') +
-                              (checkInfo.hostname ? ' | Host: ' + checkInfo.hostname : '');
+            const tooltipText = 'Delay: ' + proxy.delay + ' | Speed: ' + proxy.speed;
             
             if (isActive) {
                 return '<div class="status-badge status-active tooltip" data-tooltip="' + tooltipText + '"><i class="fas fa-check-circle animate-pulse text-green-500"></i><span class="animate-pulse text-green-500 font-semibold">ACTIVE</span></div>';
@@ -432,15 +424,10 @@ const UI_HTML = `<!DOCTYPE html>
                 const vless = generateVless(proxy);
                 const trojan = generateTrojan(proxy);
                 const shadowsocks = generateShadowsocks(proxy);
-                const checkInfo = proxy.checkInfo || {};
 
                 tbody.innerHTML += '<tr class="border-b border-white/5 hover:bg-white/5 transition-all">' +
-                    '<td class="py-4 px-4"><div class="flex items-center gap-3"><span class="text-2xl">' + getFlagEmoji(proxy.countryCode) + '</span><div><div class="font-bold text-sm md:text-base">' + proxy.country + '</div><div class="text-[11px] text-slate-400 font-mono">' + proxy.ip + ':' + proxy.port + 
-                    (checkInfo.proxyip ? '<br><span class="text-[10px] text-cyan-400">→ ' + checkInfo.proxyip + '</span>' : '') + 
-                    '</div></div></div></td>' +
-                    '<td class="py-4 px-4"><div class="text-sm">' + (proxy.isp || '-') + 
-                    (checkInfo.colo ? '<br><span class="text-[10px] text-slate-400">Colo: ' + checkInfo.colo + '</span>' : '') + 
-                    '</div></td>' +
+                    '<td class="py-4 px-4"><div class="flex items-center gap-3"><span class="text-2xl">' + getFlagEmoji(proxy.countryCode) + '</span><div><div class="font-bold text-sm md:text-base">' + proxy.country + '</div><div class="text-[11px] text-slate-400 font-mono">' + proxy.ip + ':' + proxy.port + '</div></div></div></td>' +
+                    '<td class="py-4 px-4"><div class="text-sm">' + (proxy.isp || '-') + '</div></td>' +
                     '<td class="py-4 px-4 text-center status-cell">' + getStatusHtml(proxy) + '</td>' +
                     '<td class="py-4 px-4 text-right relative dropdown-container">' +
                     '<button onclick="toggleDropdown(\\'' + id + '\\')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-xs font-bold transition-all inline-flex items-center gap-2"><i class="fas fa-cog"></i> Config <i class="fas fa-chevron-down text-[10px]"></i></button>' +
@@ -496,7 +483,6 @@ const UI_HTML = `<!DOCTYPE html>
 </html>`;
 
 // ==================== BACKEND LOGIC ====================
-// ... (SEMUA BACKEND LOGIC TETAP SAMA 100% SEPERTI SEBELUMNYA) ...
 
 const str2arr = (str) => new TextEncoder().encode(str);
 const arr2str = (arr) => new TextDecoder().decode(arr);
@@ -750,7 +736,7 @@ function sha256(message) {
         }
         let [a, b, c, d, e, f, g, h] = H;
         for (let t = 0; t < 64; t++) {
-            const S1 = rotr(e, 6) ^ rotr(e, 25) ^ rotr(e, 14);
+            const S1 = rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25);
             const ch = (e & f) ^ (~e & g);
             const T1 = (h + S1 + ch + K[t] + W[t]) >>> 0;
             const S0 = rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22);
