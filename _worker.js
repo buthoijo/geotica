@@ -437,13 +437,14 @@ const UI_HTML = `<!DOCTYPE html>
             }
         }
 
-        /* ---------- HELPERS (anti 1101) ---------- */
-
         let allProxies = [];
         let filteredProxies = [];
         let currentPage = 1;
         const itemsPerPage = 10;
         let statusCache = new Map();
+
+        /* ---------- HELPERS (anti 1101) ---------- */
+
 
         async function checkProxyStatus(ip, port) {
             const cacheKey = ip + ':' + port;
