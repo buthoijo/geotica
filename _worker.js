@@ -437,6 +437,8 @@ const UI_HTML = `<!DOCTYPE html>
             }
         }
 
+        /* ---------- HELPERS (anti 1101) ---------- */
+
         let allProxies = [];
         let filteredProxies = [];
         let currentPage = 1;
