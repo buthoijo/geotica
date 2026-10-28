@@ -445,7 +445,6 @@ const UI_HTML = `<!DOCTYPE html>
 
         /* ---------- HELPERS (anti 1101) ---------- */
 
-
         async function checkProxyStatus(ip, port) {
             const cacheKey = ip + ':' + port;
             if (statusCache.has(cacheKey)) return statusCache.get(cacheKey);
@@ -543,8 +542,6 @@ const UI_HTML = `<!DOCTYPE html>
                 }
             }
         }
-
-        /* ---------- MAIN WORKER ---------- */
 
         // ====== Fungsi bantu: susun nama config dengan kode negara + provider ======
         function buildConfigName(prefix, proxy) {
